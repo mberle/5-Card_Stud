@@ -62,9 +62,9 @@ public interface Scorer {
         boolean isStraight = true;
         CardValueCompare valueComp = new CardValueCompare();
         Collections.sort(handToScore,valueComp);
-        for(int i = 0; i < 4; i++)
+        for(int i = 4; i > 0; i--)
         {
-            if(handToScore.get(i).getValue() - handToScore.get(i+1).getValue() != -1)
+            if(handToScore.get(i).getValue() - handToScore.get(i-1).getValue() != -1)
             {
                 isStraight = false;
             }

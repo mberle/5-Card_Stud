@@ -105,6 +105,11 @@ public class Player
         }
     }
 
+    public void setName(String newName)
+    {
+        name = newName;
+    }
+
     /*
      * Return a string representing the player and the amount of money they have available
      */

@@ -30,6 +30,10 @@ class Table
     private JPanel dealerHand;
     private JPanel playerHand;
 
+    private JPanel center;
+
+
+    private JDialog contPrompt;
 
     public Table()
     {
@@ -39,6 +43,7 @@ class Table
         dealer = new Dealer(player.getStash() * 5, true);
 
         makeFrame();
+
     }
 
     public void makeFrame()
@@ -64,7 +69,7 @@ class Table
         south.setLayout(new FlowLayout());
         contentPane.add(south, BorderLayout.SOUTH);
 
-        JPanel center = new JPanel();
+        center = new JPanel();
         center.setLayout(new GridLayout(1,2));
         contentPane.add(center, BorderLayout.CENTER);
 
@@ -152,6 +157,21 @@ class Table
 
         dealerStash.setText("Stash: " + dealer.getStash());
 
+        dealerHand.removeAll();
+        dealerHand.add(new JLabel("Dealer's Hand"),BorderLayout.CENTER);
+        for(Card card : dealer.getHand())
+        {
+            dealerHand.add(new JLabel(new ImageIcon(card.getGraphic())), BorderLayout.CENTER);
+        }
+
+        playerHand.removeAll();
+        playerHand.add(new JLabel(player.getName() + "'s Hand"),BorderLayout.CENTER);
+        for(Card card : player.getHand())
+        {
+            playerHand.add(new JLabel(new ImageIcon(card.getGraphic())), BorderLayout.CENTER);
+        }
+        frame.invalidate();
+        frame.validate();
         frame.repaint();
     }
 
@@ -163,10 +183,21 @@ class Table
         // Get the bet for this hand from the player.  Validate, and take from player's stash and put in the pot
         if(input.getText() != null)
         {
+
             Integer bets = parseInt(input.getText());
             bet = bets;
             pot = bet;
+            if(bet > player.getStash())
+            {
+                result.setText("You don't have enough money! Try again.");
+            }
+            else if(bet <= 0)
+            {
+                result.setText("Bets must be a positive value! Try again.");
+            }
             player.setStash(player.getStash() - bet);
+
+
 
             // Dealer will match the bet or go all-in if not enough
             if (dealer.getStash() >= bet)
@@ -222,6 +253,7 @@ class Table
 
         updatePlayerLabels();
 
+
         frame.repaint();
 
         check.setEnabled(true);
@@ -247,7 +279,9 @@ class Table
      */
     private void scoreGame()
     {
-
+        dealer.showAllCards();
+        updatePlayerLabels();
+        pause();
         // Compare both player's score and declare winner.  Award pot to winner and clear player's hands
         if (player.scoreHand() < dealer.scoreHand())
         {
@@ -277,11 +311,19 @@ class Table
                 dealer.setStash(dealer.getStash() + (pot - bet));
             }
         }
+        updatePlayerLabels();
+        pause();
+        pause();
+        pause();
         reset();
     }
 
     private void reset()
     {
+
+        JOptionPane.showMessageDialog(frame, "Continue?");
+
+
         pot = 0;
         potLabel.setText("Pot Total: " + pot);
         frame.repaint();
@@ -291,6 +333,16 @@ class Table
             pause();
         }
 
+        playerHand.removeAll();
+
+        JLabel playerHandDes = new JLabel(player.getName() + "'s hand");
+        playerHand.add(playerHandDes, BorderLayout.CENTER);
+
+        dealerHand.removeAll();
+
+        JLabel dealerHandDes = new JLabel("Dealer's Hand");
+        dealerHand.add(dealerHandDes, BorderLayout.CENTER);
+
         player.clearHand();
         dealer.clearHand();
         dealer.resetDeck();
@@ -299,7 +351,22 @@ class Table
         check.setEnabled(false);
         fold.setEnabled(false);
         updatePlayerLabels();
+
+
+
     }
+
+    private void quit()
+    {
+        Runtime.getRuntime().exit(0);
+    }
+
+    private void cont()
+    {
+        contPrompt.setVisible(false);
+        contPrompt.setModal(false);
+    }
+
     /*
      * Pause for 2 seconds
      */
@@ -319,4 +386,6 @@ class Table
     {
         return pot;
     }
+
+
 }
