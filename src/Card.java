@@ -159,7 +159,7 @@ public class Card implements Comparable<Card>
 
     }
 
-    public BufferedImage getCardFace()
+    public BufferedImage getGraphic()
     {
         if(visible)
             return cardFront;
